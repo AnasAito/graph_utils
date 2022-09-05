@@ -7,6 +7,9 @@ class MetaGraph {
   getNeighbors(src_name) {
     return this.data["edges"].filter((edge) => edge["source"] === src_name);
   }
+  getEdge(src_name,tgt_name ,edges_to_include){
+    return this.data["edges"].filter((edge) => (edge["source"] === src_name)& (edge["target"] === tgt_name));
+  }
   getShortPath(src_name, tgt_name, edges_to_include = "all") {
     let data_to_use = [];
     if (edges_to_include !== "all")
@@ -34,5 +37,5 @@ class MetaGraph {
 
 module.exports = MetaGraph;
 
-//const square = new MetaGraph(graph_data);
-//console.log(square.get_neighbors('person'));
+//const graph = new MetaGraph(graph_data);
+//console.log(graph.get_neighbors('person'));
