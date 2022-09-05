@@ -1,4 +1,5 @@
 const Graph = require("node-dijkstra");
+const R = require("ramda");
 class MetaGraph {
   constructor(data) {
     this.data = data;
@@ -7,8 +8,21 @@ class MetaGraph {
   getNeighbors(src_name) {
     return this.data["edges"].filter((edge) => edge["source"] === src_name);
   }
-  getEdge(src_name,tgt_name ,edges_to_include){
-    return this.data["edges"].filter((edge) => (edge["source"] === src_name)& (edge["target"] === tgt_name));
+  getEdge(src_name, tgt_name, edges_to_include = "all") {
+    let edges = [];
+    if (edges_to_include === "all") {
+      edges = this.data["edges"].filter(
+        (edge) => (edge["source"] === src_name) & (edge["target"] === tgt_name)
+      );
+    } else {
+      edges = this.data["edges"].filter(
+        (edge) =>
+          (edge["source"] === src_name) &
+          (edge["target"] === tgt_name) &
+          edges_to_include.includes(edge["type"])
+      );
+    }
+    return edges.map((edge) => edge["edge_type"]);
   }
   getShortPath(src_name, tgt_name, edges_to_include = "all") {
     let data_to_use = [];
@@ -31,7 +45,13 @@ class MetaGraph {
       route.addNode(node, neighbors);
     }
 
-    return route.path(src_name, tgt_name);
+    let path = route.path(src_name, tgt_name);
+    let triplets = R.aperture(2, path);
+    return triplets.map((triplet) => [
+      triplet[0],
+      triplet[1],
+      this.getEdge(triplet[0], triplet[1]),
+    ]);
   }
 }
 
