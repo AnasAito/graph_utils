@@ -7,8 +7,13 @@ class MetaGraph {
   getNeighbors(src_name) {
     return this.data["edges"].filter((edge) => edge["source"] === src_name);
   }
-  getEdge(src_name,tgt_name ,edges_to_include){
-    return this.data["edges"].filter((edge) => (edge["source"] === src_name)& (edge["target"] === tgt_name));
+  getEdge(src_name, tgt_name, edges_to_include) {
+    return this.data["edges"].filter(
+      (edge) =>
+        (edge["source"] === src_name) &
+        (edge["target"] === tgt_name) &
+        edges_to_include.includes(edge["type"])
+    );
   }
   getShortPath(src_name, tgt_name, edges_to_include = "all") {
     let data_to_use = [];
@@ -31,7 +36,8 @@ class MetaGraph {
       route.addNode(node, neighbors);
     }
 
-    return route.path(src_name, tgt_name);
+    path = route.path(src_name, tgt_name);
+    return path;
   }
 }
 
