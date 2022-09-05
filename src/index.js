@@ -6,9 +6,8 @@ const metaGraph = new MetaGraph(graph["graph"]);
 //console.log();
 
 app.get("/", (req, res) => {
-  res.send("test");
-  console.log(metaGraph.getNeighbors("person"));
-  console.log(metaGraph.getShortPath("person", "disease"));
+  // res.json(metaGraph.getNeighbors("person"));
+  res.json(metaGraph.getShortPath("person", "disease"));
 });
 
 app.listen(8080);
