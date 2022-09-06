@@ -15,7 +15,8 @@ class MetaGraph {
         // console.log(edge);
         return (edge["source"] === src_name) & (edge["target"] === tgt_name);
       });
-      return edges_list.map((edge) => edge["edge_type"]);
+      edges_list = edges_list.map((edge) => edge["edge_type"]);
+      return [...new Set(edges_list)];
     } else {
       let edges_list = this.data["edges"].filter(
         (edge) =>
@@ -23,7 +24,8 @@ class MetaGraph {
           (edge["target"] === tgt_name) &
           edges_to_include.includes(edge["type"])
       );
-      return edges_list.map((edge) => edge["edge_type"]);
+      edges_list = edges_list.map((edge) => edge["edge_type"]);
+      return [...new Set(edges_list)];
     }
   }
 
@@ -42,11 +44,11 @@ class MetaGraph {
       let tgt = data_to_use[idx]["target"];
 
       g.setEdge(src, tgt, 1);
-      g.setEdge(tgt, src, 1);
+      //g.setEdge(tgt, src, 1);
     }
     // find all paths
-
-    let paths = ksp.ksp(g, src_name, tgt_name, 20);
+    // console.log(src_name, tgt_name);
+    let paths = ksp.ksp(g, src_name, tgt_name, 10);
 
     // return only shortest paths
     let min_cost = Math.min(...paths.map((path) => path["totalCost"]));
@@ -67,6 +69,8 @@ class MetaGraph {
           };
         })
       );
+    // console.log(sh_paths);
+    //console.log("---------------------");
     return sh_paths;
   }
   is_valid_path(path, flag) {
@@ -117,7 +121,7 @@ class MetaGraph {
       let all_paths = this.cartesian(paths_a, paths_b);
       return all_paths.map((path, idx) => {
         let key = `path_${idx}`;
-        return { [key]: path };
+        return path;
       });
     } else {
       let all_paths = this.getAllShortPath(
@@ -129,7 +133,7 @@ class MetaGraph {
 
       return all_paths.map((path, idx) => {
         let key = `path_${idx}`;
-        return { [key]: path };
+        return path;
       });
     }
   }
@@ -137,14 +141,7 @@ class MetaGraph {
     // compute src tgt combinations
     let pairs = this.cartesian(source_list, target_list);
     return pairs.map((pair) => {
-      return {
-        [`${pair[0]}_${pair[1]}`]: this.computePaths(
-          pair[0],
-          pair[1],
-          interm_name,
-          edges_to_include
-        ),
-      };
+      return this.computePaths(pair[0], pair[1], interm_name, edges_to_include);
     });
   }
 }
