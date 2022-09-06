@@ -8,25 +8,10 @@ app.set("json spaces", 2);
 const metaGraph = new MetaGraph(graph["graph"]);
 const metaGraphRev = new MetaGraph(graph_rev["graph_rev"]);
 //console.log();
-
-app.get("/", (req, res) => {
-  // res.json(metaGraph.getNeighbors("person"));
-
-  let paths = metaGraph.find_paths(
-    ["scientific_paper", "patent"],
-    ["person"],
-    "scientific_concept"
-  );
-  let paths_rev = metaGraphRev.find_paths(
-    ["scientific_paper", "patent"],
-    ["person"],
-    "scientific_concept"
-  );
-  // ),
-  //};
-
-  res.json(Utils.formatPaths({ g: paths, g_rev: paths_rev }));
-
+function createQuery(source_list, target_list, interm) {
+  let paths = metaGraph.find_paths(source_list, target_list, interm);
+  let paths_rev = metaGraphRev.find_paths(source_list, target_list, interm);
+  normalized_path = Utils.formatPaths({ g: paths, g_rev: paths_rev });
   // TODO
   // PATH_TO_QUERY
   query = `
@@ -41,6 +26,16 @@ WITH target0, COUNT(*) AS count
 WITH target0.id AS target0_id, target0.name AS target0_name, count
 RETURN target0_id, target0_name, count
 `;
+  return normalized_path;
+}
+app.get("/", (req, res) => {
+  res.json(
+    createQuery(
+      ["scientific_paper", "patent"],
+      ["person"],
+      "scientific_concept"
+    )
+  );
 });
 
 app.listen(8080);
